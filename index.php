@@ -1,33 +1,26 @@
 <?php
 
-require 'config.php';
+require 'functions.php';
 
-$ch = curl_init("https://developers.zomato.com/api/v2.1/location_details?entity_id=97948&entity_type=subzone");
+$start_locations = get_from_zomato("location_details?entity_id=97948&entity_type=subzone");
 
-curl_setopt(
-	$ch, 
-	CURLOPT_HTTPHEADER, 
-	array(
-		'Accept: application/json',
-		'user-key: ZOMATO_API_KEY'
-	)
-);
+// var_dump($start_locations);
 
-// Returns the transfer as a string instead of outputting it directly
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+$random_rest_key = array_rand($start_locations["nearby_res"]);
 
-$data = curl_exec($ch);
-curl_close($ch);
+$random_rest_id = $start_locations["nearby_res"][$random_rest_key];
 
-echo "<pre>";
+$restaurant_deets = get_from_zomato("restaurant?res_id=" . $random_rest_id);
 
-$output = json_decode($data, true);
+if (!empty($restaurant_deets)){
+	// echo '<pre>';
+	// var_dump($restaurant_deets);
 
-// var_dump($output);
-
-$randomRest = array_rand($output["nearby_res"]);
-
-echo $output["nearby_res"][$randomRest];
+	$restaurant_name = $restaurant_deets["name"];
+	$restaurant_link = $restaurant_deets["url"];
+	$restaurant_number = $restaurant_deets["phone_numbers"]; // May potentially have >1 number
+	$restaurant_image = $restaurant_deets["featured_image"];
+}
 
 exit;
 
