@@ -1,26 +1,33 @@
 <?php
 
-echo "Run, Randomato!\n";
+require 'config.php';
 
-$ch = curl_init("https://developers.zomato.com/api/v2.1/categories");
+$ch = curl_init("https://developers.zomato.com/api/v2.1/location_details?entity_id=97948&entity_type=subzone");
 
 curl_setopt(
 	$ch, 
 	CURLOPT_HTTPHEADER, 
 	array(
 		'Accept: application/json',
-		'user-key: 108a557d32aaa2ffe51444df48fbe052'
+		'user-key: ZOMATO_API_KEY'
 	)
 );
 
-$data = curl_exec($ch);
+// Returns the transfer as a string instead of outputting it directly
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 
+$data = curl_exec($ch);
 curl_close($ch);
 
-$output = json_decode($data);
 echo "<pre>";
 
-print_r($output);
+$output = json_decode($data, true);
+
+// var_dump($output);
+
+$randomRest = array_rand($output["nearby_res"]);
+
+echo $output["nearby_res"][$randomRest];
 
 exit;
 
